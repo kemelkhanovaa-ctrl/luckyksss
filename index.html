@@ -17,9 +17,8 @@ sendChat = async function () {
   const message = $('chatText').value.trim();
   if (!message) return;
 
-  const password = prompt("Введи пароль LUCKYKSS");
-  if (!password) return;
-
+  const password = "";
+  
   bubble(message, true);
   $('chatText').value = '';
   const loading = bubble("Lucky думает...");
