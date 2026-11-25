@@ -12,3 +12,35 @@ try{$('ownerRules').value=localStorage.getItem('lk_rules')||''}catch{}
 const originalSend=sendChat;
 sendChat=async function(){let q=$('chatText').value.trim(),f=$('chatPhoto').files[0],t=q.toLowerCase();if(!q&&!f)return;let next=/бордов|винн/.test(t)?'бордовый свитер':/сер[ыаое].*свитер|свитер.*сер/.test(t)?'серый свитер':/джинс/.test(t)?'прямые джинсы':'';if(next){topic=next;occasion=''}let o=/кафе|свидан/.test(t)?'кафе':/вечер|ресторан/.test(t)?'вечер':/повседнев|универ/.test(t)?'повседневка':/фотосесс/.test(t)?'фотосессия':'';if(o)occasion=o;if(!topic||(!next&&!o&&!/цвет|сочет|куп|дорог|носить/.test(t))){return originalSend()}let d=bubble(q||'Фото вещи',true);$('chatText').value='';$('chatPhoto').value='';if(f){try{let im=document.createElement('img');im.src=await read(f);d.append(im)}catch{}}let data={ 'бордовый свитер':{c:['#752b43','#51382b','#f4f0e8','#344568','#252328'],looks:['тёмные прямые джинсы, лоферы и чёрная сумка','шоколадные классические брюки, золотые серьги и структурированная сумка','чёрная юбка миди, сапоги и лаконичные украшения','молочные брюки и светлая сумка']},'серый свитер':{c:['#929298','#252328','#f4f0e8','#752b43'],looks:['чёрные прямые брюки и белые кеды','молочные брюки, бордовая сумка и лоферы','графитовая юбка и серебристые украшения','белые джинсы и светлое пальто']},'прямые джинсы':{c:['#344568','#f4f0e8','#51382b','#252328'],looks:['белая футболка, ремень и кеды','молочная рубашка, шоколадный жакет и лоферы','чёрный топ, жакет и остроносая обувь','кремовый топ и структурированная сумка']}}[topic];let ix=['повседневка','кафе','вечер','фотосессия'].indexOf(occasion);let r=ix<0?'Смотри, '+topic+' — вполне можно красиво обыграть. Но ты куда хочешь это носить: на повседневку, в кафе, на вечер или на фотосессию? От этого реально зависит весь образ.': 'Смотри, для '+occasion+' я бы выбрала '+data.looks[ix]+'. Тут главное — аккуратная посадка и спокойная палитра, тогда образ будет выглядеть собранно и дороже. '+(topic==='бордовый свитер'?'Бордовый с шоколадным даёт глубокое сочетание, а молочный добавляет контраст.':'Не перегружай образ аксессуарами.')+' А у тебя уже есть что-то из этого? Если ради одной вещи нужно докупать половину гардероба, я бы не спешила.';if(topic==='серый свитер'&&/черн|чёрн|бел/.test($('pref').value.toLowerCase()))r+=' Ты обычно носишь чёрное и белое — если серый не любишь, лучше не брать его просто потому, что он красивый.';if(f)r+=' Фото вижу как вложение, но распознавание пока не подключено.';if($('ownerRules').value)r+='\nТвои записанные правила: '+$('ownerRules').value;let b=bubble(r);let x=document.createElement('div');x.innerHTML=sw(data.c);b.append(x);$('chatlog').scrollTop=$('chatlog').scrollHeight};
 </script></html>
+<script>
+sendChat = async function () {
+  const message = $('chatText').value.trim();
+  if (!message) return;
+
+  const password = prompt("Введи пароль LUCKYKSS");
+  if (!password) return;
+
+  bubble(message, true);
+  $('chatText').value = '';
+  const loading = bubble("Lucky думает...");
+
+  try {
+    const response = await fetch(
+      "https://luckykss-ai.kemelkhanovaa.workers.dev/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message, password })
+      }
+    );
+
+    const data = await response.json();
+    loading.textContent = data.answer ||
+      data.error || "Попробуй ещё раз";
+  } catch {
+    loading.textContent = "Ошибка подключения";
+  }
+};
+</script>
